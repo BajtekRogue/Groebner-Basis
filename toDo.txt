@@ -1,0 +1,14 @@
+Implement Rational Function class and then Implcization of rational curves
+
+Equations:
+
+Drawing varieties in R^2, R^3
+Solving equations in 1 variables
+Solving equations in n varaibles
+
+Finite fields: 
+
+finding irreducible polynomials
+factoring polynomials over finite fields
+constructing GF(p^k)
+implemeting GF(p^k)
