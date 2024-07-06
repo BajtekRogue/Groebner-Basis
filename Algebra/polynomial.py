@@ -1,8 +1,8 @@
 
 from .monomial import Monomial
 from functools import cmp_to_key
-from Fields.fraction import RationalNumber
-from Fields.galoisField import GaloisField
+from .fraction import RationalNumber
+from .galoisField import GaloisField
 
 class Polynomial:
     

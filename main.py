@@ -1,21 +1,13 @@
-from tqdm import tqdm
-from Fields import GaloisField
-from Ideals import Ideal
-from Ideals import polynomialReduce, getGroebnerBasis, extendToGroebnerBasis, lexOrder, gradedLexOrder
-
-from Polynomials.polynomialMethods import *
-
+from Algebra.polynomialMethods import *
+from Algebra.rationalFunction import RationalFunction
+from Algebra.fraction import RationalNumber
+from Algebra.varieties import rationalImplicitization
 if __name__ == "__main__":
     x = defineVariable('x', RationalNumber)
     y = defineVariable('y', RationalNumber)
     z = defineVariable('z', RationalNumber)
-    u = defineVariable('u', RationalNumber)
-    v = defineVariable('v', RationalNumber)
-    {'x': u * v, 'y': v, 'z': u ** 2}
-    X = implicitization({'x': u * v, 'y': v, 'z': u ** 2})
+    t = defineVariable('t', RationalNumber)
+    a = RationalFunction(1 + t ** 2, 1 - t ** 2)
+    b = RationalFunction(2 * t, 1 - t ** 2)
+    X = rationalImplicitization({"x": a, "y": b})
     print(X)
-    f = (x+4) ** 3 * (y+3) ** 2 * (z+2)
-    print(f)
-    print(squareFreePart(f))
-    print((x+4) * (y + 3) * (z + 2))
-    

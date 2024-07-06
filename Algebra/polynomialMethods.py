@@ -1,12 +1,16 @@
 import copy
 from itertools import combinations
 from typing import Type
-from Fields import RationalNumber
-from Fields import GaloisField
+from .fraction import RationalNumber
+from .galoisField import GaloisField
 from .polynomial import Polynomial
 from .monomial import Monomial
-from Ideals import polynomialReduce, getGroebnerBasis, Ideal, lexOrder, gradedLexOrder, leadingCoefficient
+from .ideal import Ideal
+from .monomialOrders import lexOrder, gradedLexOrder, leadingCoefficient
+from .groebnerBasis import polynomialReduce, getGroebnerBasis
 from NumberTheory import integerLCM, integerGCD
+
+
 
 SUPPORTED_FIELDS = [RationalNumber, float, complex, GaloisField]
 ZERO = Polynomial({}, None)
@@ -29,7 +33,7 @@ def one(field: Type, prime: int = None):
     elif field == float or field == complex:
         return 1
     else:
-        raise ValueError("The field is not supported.")
+        raise ValueError(f"The field {field} is not supported.")
     
 
 def zero(field: Type, prime: int = None):
@@ -49,7 +53,7 @@ def zero(field: Type, prime: int = None):
     elif field == float or field == complex:
         return 0
     else:
-        raise ValueError("The field is not supported.")
+        raise ValueError(f"The field {field} is not supported.")
 
 
 def defineVariable(var: str, field: Type = RationalNumber, prime: int = None):
@@ -61,9 +65,9 @@ def defineVariable(var: str, field: Type = RationalNumber, prime: int = None):
     ValueError: If the field is not supported.
     """
     if field not in SUPPORTED_FIELDS:
-        raise ValueError("The field is not supported.")
+        raise ValueError(f"The field {field} is not supported.")
     elif var not in Monomial.VARIABLES and var != Monomial.DUMMY:
-        raise ValueError("The variable is not supported.")
+        raise ValueError(f"The variable {var} is not supported.")
     elif field == GaloisField and prime is None:
         raise ValueError("The prime must be given for GaloisField.")
     else:
@@ -81,7 +85,7 @@ def elementarySymetricPolynomial(degree: int, variables: list[str], field: Type 
     ValueError: If the field is not supported.
     """
     if field not in SUPPORTED_FIELDS:
-        raise ValueError("The field is not supported.")
+        raise ValueError(f"The field {field} is not supported.")
     
     numberOfVariables = len(variables)
     if degree <= 0 or degree > numberOfVariables:
@@ -112,7 +116,7 @@ def powerSumPolynomial(degree: int, variables: list[str], field: Type = Rational
     ValueError: If degree is non-positive or the field is not supported.
     """
     if field not in SUPPORTED_FIELDS:
-        raise ValueError("The field is not supported.")
+        raise ValueError(f"The field {field} is not supported.")
     elif degree <= 0:
         raise ValueError("Degree of power sum polynomial must be positive")
         
@@ -271,33 +275,10 @@ def normalizeCoefficients(f: Polynomial, toIntegers: bool = False) -> Polynomial
     if f.field == RationalNumber and toIntegers:
         l = integerLCM(*[coefficient.denominator for coefficient in f.getCoefficients.values()])
         d = integerGCD(*[coefficient.numerator for coefficient in f.getCoefficients.values()])
-        return f * (l / d)
+        return f * (l / d) * (-1 if leadingCoefficient(f, f.getVariables, gradedLexOrder) < 0 else 1)
     else:
         return f * (1 / leadingCoefficient(f, f.getVariables, gradedLexOrder))
     
-
-def implicitization(F: dict[str, Polynomial]) -> list[Polynomial]:
-    """
-    Returns
-    -------
-    The implicit equations of the variety defined by the polynomials F. For example {'x': u * v, 'y': v, 'z': u ** 2} will return [y²z - x²]
-
-    Raises
-    ------
-    ValueError: If the field has nonzero characteristic.
-    """
-    if F == {}:
-        return [ZERO]
-    if list(F.values())[0].field == GaloisField:
-        raise ValueError("The field must have characteristic 0.")
-    
-    parameters = list(set(sum([f.getVariables for f in F.values()], [])))
-    variables = list(F.keys())
-    coordinates = [defineVariable(var) for var in variables]
-    G = getGroebnerBasis([f - var for f, var in zip(F.values(), coordinates)], parameters + variables, lexOrder)
-    H = Ideal.eliminationIdeal(G, variables)
-    return [normalizeCoefficients(h, toIntegers=True) for h in H]
-
 
 def squareFreePart(f: Polynomial) -> Polynomial:
     """
@@ -317,3 +298,6 @@ def squareFreePart(f: Polynomial) -> Polynomial:
     d = polynomialGCD(*grad)
     Q, _ = polynomialReduce(f, [d], f.getVariables, lexOrder)
     return normalizeCoefficients(Q[0])
+
+
+

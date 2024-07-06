@@ -37,7 +37,7 @@ def integerGCD(*args: int) -> int:
     result = args[0]
     for i in range(1, len(args)):
         result = _euclidAlgorithm2(result, args[i])
-    return result
+    return abs(result)
 
 
 def integerLCM(*args: int) -> int:

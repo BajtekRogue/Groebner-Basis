@@ -1,5 +1,5 @@
 from typing import Callable
-from Polynomials import Polynomial, Monomial
+from .polynomial import Polynomial, Monomial
 from .groebnerBasis import polynomialReduce, getGroebnerBasis
 from .monomialOrders import lexOrder, gradedLexOrder
 

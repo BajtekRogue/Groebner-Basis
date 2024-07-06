@@ -1,7 +1,7 @@
 import copy
 from typing import Callable
 from tqdm import tqdm
-from Polynomials import Polynomial, Monomial
+from .polynomial import Polynomial, Monomial
 from .monomialOrders import lexOrder, leadingMonomial, leadingCoefficient
 
 def polynomialReduce(f: Polynomial, G: list[Polynomial], permutation: list[str], order: Callable

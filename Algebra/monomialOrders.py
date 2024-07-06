@@ -1,5 +1,6 @@
 from functools import cmp_to_key
-from Polynomials import Monomial, Polynomial
+from .monomial import Monomial
+from .polynomial import Polynomial
 from typing import Callable
 
 def lexOrder(alpha: Monomial, beta: Monomial, permutation: list[str]) -> bool:

@@ -1,8 +1,7 @@
-Implement Rational Function class and then Implcization of rational curves
+variety.py : add graphing V(f(x,y)) and V(g(x,y,z))
 
 Equations:
 
-Drawing varieties in R^2, R^3
 Solving equations in 1 variables
 Solving equations in n varaibles
 
