@@ -30,10 +30,10 @@ def integerGCD(*args: int) -> int:
     """
     if len(args) == 0:
         raise ValueError("At least one argument must be provided.")
-    if not all(isinstance(arg, int) for arg in args):
-        raise ValueError("All arguments must be integers.")
-    if len(args) == 1 and isinstance(args[0], (list, set)):
+    elif len(args) == 1 and isinstance(args[0], (list, set)):
         args = tuple(args[0])
+    elif not all(isinstance(arg, int) for arg in args):
+        raise ValueError("All arguments must be integers.")
     result = args[0]
     for i in range(1, len(args)):
         result = _euclidAlgorithm2(result, args[i])
@@ -56,10 +56,10 @@ def integerLCM(*args: int) -> int:
     """
     if len(args) == 0:
         raise ValueError("At least one argument must be provided.")
-    if not all(isinstance(arg, int) for arg in args):
-        raise ValueError("All arguments must be integers.")
-    if len(args) == 1 and isinstance(args[0], (list, set)):
+    elif len(args) == 1 and isinstance(args[0], (list, set)):
         args = tuple(args[0])
+    elif not all(isinstance(arg, int) for arg in args):
+        raise ValueError("All arguments must be integers.")
     result = args[0]
     for i in range(1, len(args)):
         result *=  args[i] // _euclidAlgorithm2(result, args[i])

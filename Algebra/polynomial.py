@@ -1,7 +1,7 @@
 
 from .monomial import Monomial
 from functools import cmp_to_key
-from .fraction import RationalNumber
+from .rational import rational
 from .galoisField import GaloisField
 
 class Polynomial:
@@ -102,7 +102,7 @@ class Polynomial:
                 else:
                     result[monomial] = coefficient
         
-        elif isinstance(other, (int, float, complex, RationalNumber, GaloisField)):
+        elif isinstance(other, (int, float, complex, rational, GaloisField)):
             if isinstance(other, GaloisField) and self.field != GaloisField:
                 raise ValueError(f"Cannot add modular integer to a polynomial over a field of characteristic 0")
             elif Monomial.constant() in result:
@@ -151,7 +151,7 @@ class Polynomial:
                     else:
                         result[newMonomial] = newCoefficient
                         
-        elif isinstance(other, (int, float, complex, RationalNumber, GaloisField)):
+        elif isinstance(other, (int, float, complex, rational, GaloisField)):
             if isinstance(other, GaloisField) and self.field != GaloisField:
                 raise ValueError(f"Cannot multiply a polynomial over a field of characteristic 0 by a modular integer ")
             elif Polynomial.isCoefficientZero(other):
@@ -211,7 +211,7 @@ class Polynomial:
         ------
         ValueError: If the point does not contain all variables of the polynomial or its number are not from the same field.
         """
-        if self.feild == GaloisField and not all(isinstance(value, GaloisField) for value in point.values()):
+        if self.field == GaloisField and not all(isinstance(value, GaloisField) for value in point.values()):
             raise ValueError(f"All values in the point must be from the same field as the polynomial")
         result = 0
         for monomial, coefficient in self.coefficients.items():
@@ -247,7 +247,7 @@ class Polynomial:
         """
         if isinstance(coefficient, (float, complex)) and abs(coefficient) < 0.0001:
             return True
-        elif isinstance(coefficient, (int, RationalNumber)) and coefficient == 0:
+        elif isinstance(coefficient, (int, rational)) and coefficient == 0:
             return True
         elif isinstance(coefficient, GaloisField) and (coefficient.number == 0 or coefficient.number % coefficient.prime == 0):
             return True

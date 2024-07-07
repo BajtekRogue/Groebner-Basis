@@ -1,5 +1,5 @@
 
-class RationalNumber:
+class rational:
     """
     Fraction in reduced form with positive denominator
     """ 
@@ -53,7 +53,7 @@ class RationalNumber:
     
     
     def __eq__(self, other):
-        if isinstance(other, RationalNumber):
+        if isinstance(other, rational):
             return self.numerator == other.numerator and self.denominator == other.denominator
         elif isinstance(other, int):
             return self.numerator == other and self.denominator == 1
@@ -72,16 +72,16 @@ class RationalNumber:
 
     
     def __neg__(self):
-        return RationalNumber(-self.numerator, self.denominator)
+        return rational(-self.numerator, self.denominator)
      
     
     def __add__(self, other):
-        if isinstance(other, RationalNumber):
-            return RationalNumber(self.numerator * other.denominator + other.numerator * self.denominator, self.denominator * other.denominator)
+        if isinstance(other, rational):
+            return rational(self.numerator * other.denominator + other.numerator * self.denominator, self.denominator * other.denominator)
         elif isinstance(other, int):
-            return RationalNumber(self.numerator + other * self.denominator, self.denominator)
+            return rational(self.numerator + other * self.denominator, self.denominator)
         elif isinstance(other, float):
-            return self + RationalNumber(other)
+            return self + rational(other)
         else:
             return NotImplemented
     
@@ -107,12 +107,12 @@ class RationalNumber:
     
     
     def __mul__(self, other):
-        if isinstance(other, RationalNumber):
-            return RationalNumber(self.numerator * other.numerator, self.denominator * other.denominator)
+        if isinstance(other, rational):
+            return rational(self.numerator * other.numerator, self.denominator * other.denominator)
         elif isinstance(other, int):
-            return RationalNumber(self.numerator * other, self.denominator)
+            return rational(self.numerator * other, self.denominator)
         elif isinstance(other, float):
-            return self * RationalNumber(other)
+            return self * rational(other)
         else:
             return NotImplemented
         
@@ -126,19 +126,19 @@ class RationalNumber:
     
     
     def __truediv__(self, other):
-        if isinstance(other, RationalNumber) and other.numerator != 0:
-            return self * RationalNumber(other.denominator, other.numerator)
+        if isinstance(other, rational) and other.numerator != 0:
+            return self * rational(other.denominator, other.numerator)
         elif isinstance(other, int) and other != 0:
-            return self * RationalNumber(1, other)
+            return self * rational(1, other)
         elif isinstance(other, float) and abs(other) > 0.0001:
-            self /= RationalNumber(other)
+            self /= rational(other)
             return self
         else:
             return NotImplemented
         
 
     def __rtruediv__(self, other):
-        return RationalNumber(other) / self
+        return rational(other) / self
     
 
     def __itruediv__(self, other):
@@ -150,13 +150,13 @@ class RationalNumber:
             raise TypeError(f"Exponentiation is only supported with integer exponents")
 
         if other == 0:
-            return RationalNumber(1)
+            return rational(1)
         elif other < 0:
-            self = RationalNumber(1) / self
+            self = rational(1) / self
             other = -other
 
         result = 1
-        base = RationalNumber(self.numerator, self.denominator)
+        base = rational(self.numerator, self.denominator)
 
         while other > 0:
             if other % 2 == 1:
@@ -172,10 +172,10 @@ class RationalNumber:
 
 
     def __lt__(self, other):
-        if isinstance(other, RationalNumber):
+        if isinstance(other, rational):
             return self.numerator * other.denominator < other.numerator * self.denominator
         elif isinstance(other, int):
-            return self < RationalNumber(other, 1)
+            return self < rational(other, 1)
         elif isinstance(other, float):
             return self.numerator / self.denominator < other
         else:
@@ -183,10 +183,10 @@ class RationalNumber:
     
 
     def __le__(self, other):
-        if isinstance(other, RationalNumber):
+        if isinstance(other, rational):
             return self.numerator * other.denominator <= other.numerator * self.denominator
         elif isinstance(other, int):
-            return self <= RationalNumber(other, 1)
+            return self <= rational(other, 1)
         elif isinstance(other, float):
             return self.numerator / self.denominator <= other
         else:
@@ -194,10 +194,10 @@ class RationalNumber:
         
     
     def __gt__(self, other):
-        if isinstance(other, RationalNumber):
+        if isinstance(other, rational):
             return self.numerator * other.denominator > other.numerator * self.denominator
         elif isinstance(other, int):
-            return self > RationalNumber(other, 1)
+            return self > rational(other, 1)
         elif isinstance(other, float):
             return self.numerator / self.denominator > other
         else:
@@ -205,10 +205,10 @@ class RationalNumber:
     
 
     def __ge__(self, other):
-        if isinstance(other, RationalNumber):
+        if isinstance(other, rational):
             return self.numerator * other.denominator >= other.numerator * self.denominator
         elif isinstance(other, int):
-            return self >= RationalNumber(other, 1)
+            return self >= rational(other, 1)
         elif isinstance(other, float):
             return self.numerator / self.denominator >= other
         else:
@@ -216,7 +216,7 @@ class RationalNumber:
     
     
     def __abs__(self):
-        return RationalNumber(abs(self.numerator), self.denominator)
+        return rational(abs(self.numerator), self.denominator)
 
 
     def __float__(self):
@@ -232,5 +232,5 @@ class RationalNumber:
     
 
     def __copy__(self):
-        return RationalNumber(self.numerator, self.denominator)
+        return rational(self.numerator, self.denominator)
     

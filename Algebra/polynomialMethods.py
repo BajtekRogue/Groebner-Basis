@@ -1,7 +1,7 @@
 import copy
 from itertools import combinations
 from typing import Type
-from .fraction import RationalNumber
+from .rational import rational
 from .galoisField import GaloisField
 from .polynomial import Polynomial
 from .monomial import Monomial
@@ -12,7 +12,7 @@ from NumberTheory import integerLCM, integerGCD
 
 
 
-SUPPORTED_FIELDS = [RationalNumber, float, complex, GaloisField]
+SUPPORTED_FIELDS = [rational, float, complex, GaloisField]
 ZERO = Polynomial({}, None)
 
 
@@ -28,8 +28,8 @@ def one(field: Type, prime: int = None):
     """
     if field == GaloisField:
         return GaloisField(1, prime)
-    elif field == RationalNumber:
-        return RationalNumber(1)
+    elif field == rational:
+        return rational(1)
     elif field == float or field == complex:
         return 1
     else:
@@ -48,15 +48,15 @@ def zero(field: Type, prime: int = None):
     """
     if field == GaloisField:
         return GaloisField(0, prime)
-    elif field == RationalNumber:
-        return RationalNumber(0)
+    elif field == rational:
+        return rational(0)
     elif field == float or field == complex:
         return 0
     else:
         raise ValueError(f"The field {field} is not supported.")
 
 
-def defineVariable(var: str, field: Type = RationalNumber, prime: int = None):
+def defineVariable(var: str, field: Type = rational, prime: int = None):
     """
     Define a variable with the given name and field. If using GaloisField add prime.
 
@@ -74,7 +74,7 @@ def defineVariable(var: str, field: Type = RationalNumber, prime: int = None):
         return Polynomial({Monomial({var: 1}): one(field, prime)}, field)
     
 
-def elementarySymetricPolynomial(degree: int, variables: list[str], field: Type = RationalNumber, prime: int = None) -> Polynomial:
+def elementarySymetricPolynomial(degree: int, variables: list[str], field: Type = rational, prime: int = None) -> Polynomial:
     """
     Returns
     -------
@@ -105,7 +105,7 @@ def elementarySymetricPolynomial(degree: int, variables: list[str], field: Type 
     return Polynomial(coefficients, field)
 
 
-def powerSumPolynomial(degree: int, variables: list[str], field: Type = RationalNumber, prime: int = None) -> Polynomial:
+def powerSumPolynomial(degree: int, variables: list[str], field: Type = rational, prime: int = None) -> Polynomial:
     """
     Returns
     -------
@@ -272,7 +272,7 @@ def normalizeCoefficients(f: Polynomial, toIntegers: bool = False) -> Polynomial
 
     If field is RationalNumber and toInteges is set then the coefficients will be relativly prime integers. Otherwise the coefficients will be normalized so that leading term with respect to alphabetical graded lex order is 1.
     """
-    if f.field == RationalNumber and toIntegers:
+    if f.field == rational and toIntegers:
         l = integerLCM(*[coefficient.denominator for coefficient in f.getCoefficients.values()])
         d = integerGCD(*[coefficient.numerator for coefficient in f.getCoefficients.values()])
         return f * (l / d) * (-1 if leadingCoefficient(f, f.getVariables, gradedLexOrder) < 0 else 1)
@@ -300,4 +300,31 @@ def squareFreePart(f: Polynomial) -> Polynomial:
     return normalizeCoefficients(Q[0])
 
 
+def embed(f: Polynomial, field, prime = None) -> Polynomial:
+    """
+    Returns
+    -------
+    The polynomial f embedded into the given field.
+    
+    Raises
+    ------
+    ValueError: If the field is not supported.
+    """
+
+    if field not in SUPPORTED_FIELDS:
+        raise ValueError(f"The field {field} is not supported.")
+    elif f.field == field:
+        return f
+
+    if field != GaloisField:
+        result = {}
+        for monomial, coefficient in f.coefficients.items():
+            result[monomial] = field(coefficient)
+    elif field == GaloisField and prime is not None:
+        result = {}
+        for monomial, coefficient in f.coefficients.items():
+            result[monomial] = field(coefficient, prime)
+    else:
+        raise ValueError("The prime must be given for GaloisField.")
+    return Polynomial(result, field)
 

@@ -159,7 +159,7 @@ class GaloisField():
     def __int__(self):
         return self.number
     
-
+    
     def __hash__(self):
         return hash((self.number, self.prime))
     

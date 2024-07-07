@@ -1,8 +1,5 @@
-variety.py : add graphing V(f(x,y)) and V(g(x,y,z))
 
 Equations:
-
-Solving equations in 1 variables
 Solving equations in n varaibles
 
 Finite fields: 
