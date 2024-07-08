@@ -1,5 +1,5 @@
 
-class GaloisField():
+class GaloisField:
     """
     Class representing integers modulo a prime number. Supported primes up to 1000. To extend prime range to N run getMorePrimes(N).
     """
@@ -177,3 +177,12 @@ class GaloisField():
                 GaloisField.PRIMES.add(i)
                 for j in range(i * i, N + 1, i):
                     isPrime[j] = False
+    
+    @staticmethod
+    def getAllElements(prime) -> list['GaloisField']:
+        """
+        Returns
+        -------
+        A list of all elements in the Galois field modulo prime.
+        """
+        return [GaloisField(i, prime) for i in range(prime)]

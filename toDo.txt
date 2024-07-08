@@ -1,6 +1,4 @@
 
-Equations:
-Solving equations in n varaibles
 
 Finite fields: 
 

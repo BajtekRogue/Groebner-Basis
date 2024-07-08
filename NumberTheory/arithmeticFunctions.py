@@ -5,7 +5,7 @@ def eulerTotientFunction(n: int, usePrimeFactorization = True) -> int:
     """
     Returns
     -------
-    Euler's totient function φ(n) of n. By deafult it's done by the formula φ(n) = n * Π (1 - 1/p) for prime factors of n. Setting usePrimeFactorization to False will use the formula φ(n) = Σ gcd(i, n) for i = 1 to n. Definition takes O(n * log(n)) time, product formula takes O(n / log(n)) amortized time.
+    Euler's totient function φ(n) of n. By default, it's done by the formula φ(n) = n * Π (1 - 1/p) for prime factors of n. Setting usePrimeFactorization to False will use the formula φ(n) = Σ gcd(i, n) for i = 1 to n. Definition takes O(n * log(n)) time, product formula takes O(n / log(n)) amortized time.
 
     Raises
     ------
@@ -70,7 +70,7 @@ def divisorFunction(n: int, s: complex = 1, usePrimeFactorization = True) -> com
     """
     Returns
     -------
-    σ_s(n), sum of the s-th powers of divisors of n. The formula σ_s(n) = Π (p^((a+1)s) - 1) / (p^a - 1) for distinct prime factors of n is used by deafult. Setting usePrimeFactorization to False will use the definition.
+    σ_s(n), sum of the s-th powers of divisors of n. The formula σ_s(n) = Π (p^((a+1)s) - 1) / (p^a - 1) for distinct prime factors of n is used by default. Setting usePrimeFactorization to False will use the definition.
 
     Raises
     ------
@@ -87,22 +87,6 @@ def divisorFunction(n: int, s: complex = 1, usePrimeFactorization = True) -> com
             result *= (p ** ((a + 1) * s) - 1) / (p ** s - 1)
         return int(result) if result.is_integer() else result
     else:
-        def divisors(n: int) -> list[int]: 
-            result1 = []
-            result2 = []
-            i = 1
-            while i * i <= n:
-                if n % i == 0:
-                    result1.append(i)
-                    result2.append(n // i)
-                i += 1
-
-            if result1[-1] == result2[-1]:
-                result2.pop()
-
-            result2.reverse()
-            return result1 + result2
-        
         result = 0
         for i in divisors(n):
             result += i ** s

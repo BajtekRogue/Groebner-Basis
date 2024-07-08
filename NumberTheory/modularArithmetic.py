@@ -22,7 +22,7 @@ def integerGCD(*args: int) -> int:
 
     Returns
     -------
-    The greates common divisor of the provided integers.
+    The greatest common divisor of the provided integers.
     
     Raises
     ------

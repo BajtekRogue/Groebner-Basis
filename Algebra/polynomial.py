@@ -108,7 +108,10 @@ class Polynomial:
             elif Monomial.constant() in result:
                 result[Monomial.constant()] += other
             else:
-                result[Monomial.constant()] = other
+                if isinstance(other, int) and self.field == GaloisField:
+                    result[Monomial.constant()] = GaloisField(other, next(iter(self.getCoefficients.values())).prime)
+                else:
+                    result[Monomial.constant()] = other
         else:
             return NotImplemented
         
@@ -205,7 +208,7 @@ class Polynomial:
         """
         Returns
         -------
-        The value of the polynomial at the given point. For example givne f(x,y) imputing {'x': 1, 'y': 2} returns f(1,2)
+        The value of the polynomial at the given point. For example given f(x,y) imputing {'x': a, 'y': b} returns f(a,b)
 
         Raises
         ------
@@ -245,7 +248,7 @@ class Polynomial:
         -------
         If field is countable, checks if the coefficient is zero. If the field is uncountable, checks if the coefficient is close to zero.
         """
-        if isinstance(coefficient, (float, complex)) and abs(coefficient) < 0.0001:
+        if isinstance(coefficient, (float, complex)) and abs(coefficient) < 0.001:
             return True
         elif isinstance(coefficient, (int, rational)) and coefficient == 0:
             return True
@@ -327,3 +330,30 @@ class Polynomial:
         return sorted(list(result))
     
 
+    def substitute(self, var: str, val) -> 'Polynomial':
+        """
+        Returns
+        -------
+        The polynomial obtained by substituting the variable var with the value val.
+
+        Raises
+        ------
+        ValueError: The variable is not in the polynomial.
+        """
+        if var not in self.getVariables:
+            raise ValueError(f"The variable {var} is not in the polynomial")
+
+        
+        result = {}
+        for monomial, coefficient in self.coefficients.items():
+            power = monomial.exponent.get(var, 0)
+            newCoefficient = coefficient * val ** power
+            newMonomial = dict(monomial.exponent)
+            if var in newMonomial.keys():
+                del newMonomial[var]
+            newMonomial = Monomial(newMonomial)
+            if newMonomial in result:
+                result[newMonomial] += newCoefficient
+            else:
+                result[newMonomial] = newCoefficient
+        return Polynomial(result, self.field)
