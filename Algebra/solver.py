@@ -158,6 +158,8 @@ def solveSystem(F: list[Polynomial], field = None, prime = None) -> list[tuple]:
         solutions = recursiveSolver(G) 
         if solutions == "There are infinitely many solutions.":
             return "There are infinitely many solutions."
+        elif solutions == "No solutions found.":
+            return []
         for i in range(len(solutions)):
             solutions[i] = dict(sorted(solutions[i].items(), key=lambda x: x[0]))
     return solutions
@@ -245,7 +247,7 @@ def characteristicEquations(F: list[Polynomial]) -> dict[str, Polynomial]:
         newPermutation = [v for v in variables if v != var]
         newPermutation += [var]
         G = getGroebnerBasis(F, newPermutation, order=lexOrder)
-        H = [g for g in G if len(g.getVariables) == 1]
+        H = [g for g in G if g.getVariables == [var]]
         if len(H) == 0:
             return "Characteristic equations do not exist."
         result[var] = H[0]

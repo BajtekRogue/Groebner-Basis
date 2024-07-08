@@ -10,19 +10,12 @@ if __name__ == "__main__":
     x = defineVariable('x', rational)
     y = defineVariable('y', rational)
     z = defineVariable('z', rational)
-    w = defineVariable('w', rational)
-    a = defineVariable('a', rational)
-    b = defineVariable('b', rational)
-    c = defineVariable('c', rational)
-    d = defineVariable('d', rational)
-    e = defineVariable('e', rational)
-    f1 = a*b+b-a*c-a
-    f2 = b*c+c-b-b*d
-    f3 = c*d+d-c-c*e
-    f4 = d*e+e-d-d*a
-    g = a*b*c*d * e -1
-    F = [f1, f2, f3, f4, g]
-    # print(getGroebnerBasis(F, ['a', 'b', 'c', 'd', 'e']))
+
+    f = x + y + z - 6
+    g = x**2 + y**2 + z**2 - 14
+    h = x**3 + y**3 + z**3 - 36
+
+    F = [f, g, h]
     print(f"System = {F}")
     print(f"Solutions = {solveSystem(F, field=rational)}")
     print(f"Characteristic equations = {characteristicEquations(F)}")
