@@ -1,6 +1,8 @@
 import copy
-from itertools import combinations
+from itertools import combinations, product
 from typing import Type
+
+from tqdm import tqdm
 from .rational import rational
 from .galoisField import GaloisField
 from .polynomial import Polynomial
@@ -8,7 +10,7 @@ from .monomial import Monomial
 from .ideal import Ideal
 from .monomialOrders import lexOrder, gradedLexOrder, leadingCoefficient
 from .groebnerBasis import polynomialReduce, getGroebnerBasis
-from NumberTheory import integerLCM, integerGCD
+from NumberTheory import integerLCM, integerGCD, primeFactorization
 
 
 
@@ -182,7 +184,7 @@ def _lcm(f: Polynomial, g: Polynomial) -> Polynomial:
     if field != g.field:
         raise ValueError("The polynomials must be over the same field.")
     if field == GaloisField:
-        prime = f.getCoefficients()[list(f.getCoefficients().keys())[0]].prime
+        prime = next(iter(f.getCoefficients.items()))[1].prime
     else:
         prime = None
         
@@ -328,3 +330,30 @@ def embed(f: Polynomial, field, prime = None) -> Polynomial:
         raise ValueError("The prime must be given for GaloisField.")
     return Polynomial(result, field)
 
+
+def findIrreduciblePolynomial(prime: int, degree: int) -> Polynomial:
+    """
+    Returns
+    -------
+    An irreducible polynomial of given degree over the Galois field of given prime.
+    """
+    x = defineVariable("x", GaloisField, prime)
+    monomials = [x**i for i in range(degree)]
+    coefficients = [GaloisField(i, prime) for i in range(prime)] 
+    allPolynomials = []
+    for coeffCombination in product(coefficients, repeat=degree):
+        polynomial = x**degree
+        for c, m in zip(coeffCombination, monomials):
+            polynomial += c * m
+        allPolynomials.append(polynomial)
+
+    pF = set(primeFactorization(degree).keys())
+    mainPolynomial = x**(prime**degree) - x
+
+    for polynomial in allPolynomials:
+        _, r = polynomialReduce(mainPolynomial, [polynomial], ["x"], lexOrder)
+        if r.isZeroPolynomial():
+            for q in pF:
+                d = polynomialGCD(polynomial, x**(prime**(degree//q)) - x)
+                if (d - 1).isZeroPolynomial():
+                    return polynomial

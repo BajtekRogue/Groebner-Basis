@@ -138,10 +138,12 @@ class Ideal:
         return getGroebnerBasis(self.generators, permutation, order)
     
 
-    def reduceBasis(self, permutation: list[str], order: Callable = lexOrder) -> None:
+    def reduceBasis(self, permutation : list[str] = None, order: Callable = gradedLexOrder) -> None:
         """
         Reduces the generators of the ideal to a Groebner basis with respect to the monomial order given by permutation.
         """
+        if permutation is None:
+            permutation = self.variables
         self.generators = getGroebnerBasis(self.generators, permutation, order)
         self.groebnerBasis = self.generators
     

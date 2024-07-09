@@ -1,6 +1,3 @@
-# Math
-
-
 from .galoisField import GaloisField
 from .polynomial import Polynomial
 from .rational import rational

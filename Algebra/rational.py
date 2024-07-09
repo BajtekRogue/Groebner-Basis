@@ -147,7 +147,7 @@ class rational:
 
     def __pow__(self, other):
         if not isinstance(other, int):
-            raise TypeError(f"Exponentiation is only supported with integer exponents")
+            raise TypeError(f"Exponentiation is only supported with integer exponents and {other} is type {type(other)}")
 
         if other == 0:
             return rational(1)

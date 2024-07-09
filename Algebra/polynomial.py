@@ -45,10 +45,6 @@ class Polynomial:
                 result += f'{coefficient}'
             elif monomial == Monomial.constant():
                 result += f'{abs(coefficient)}'
-            # elif isinstance(coefficient, GaloisField) and coefficient.number != 1:
-            #     result += f'{coefficient}'
-            # elif isinstance(coefficient, GaloisField) and coefficient.number == 1:
-            #     result += ''
             elif (coefficient != 1 and coefficient != -1):
                 result += f'{abs(coefficient)}'
 

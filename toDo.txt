@@ -1,8 +1,0 @@
-
-
-Finite fields: 
-
-finding irreducible polynomials
-factoring polynomials over finite fields
-constructing GF(p^k)
-implemeting GF(p^k)
