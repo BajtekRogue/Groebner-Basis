@@ -74,7 +74,8 @@ def extendToGroebnerBasis(Basis: list[Polynomial], permutation = list[str], orde
     G = list(Basis)
     while True: 
         H = list(G)
-        for i in range(len(G)):
+        print(f"size = {len(H)}")
+        for i in tqdm(range(len(G))):
             for j in range(i + 1, len(G)):
                 if not lcmCriterion(leadingMonomial(G[i], permutation, order), leadingMonomial(G[j], permutation, order)) and not chainCriterion(i, j, G, permutation):
                     _, r = polynomialReduce(syzygy(G[i], G[j], permutation, order), G, permutation, order)

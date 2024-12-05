@@ -95,3 +95,32 @@ def extendedEuclidAlgorithm(*args: int) -> tuple[int, list[int]]:
         coefficients = [c * x for c in coefficients] + [y]
     
     return d, coefficients
+
+
+def divisors(n: int) -> list[int]:
+    """
+    Returns
+    -------
+    Divisors of n as a list in increasing order in O(sqrt(n)) time.
+
+    Raises
+    ------
+    ValueError: If n is not a positive integer.
+    """
+    if n < 1 or not isinstance(n, int):
+        raise ValueError("The argument must be a positive integer.")
+    
+    result1 = []
+    result2 = []
+    i = 1
+    while i * i <= n:
+        if n % i == 0:
+            result1.append(i)
+            result2.append(n // i)
+        i += 1
+
+    if result1[-1] == result2[-1]:
+        result2.pop()
+
+    result2.reverse()
+    return result1 + result2

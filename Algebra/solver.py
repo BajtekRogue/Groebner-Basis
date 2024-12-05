@@ -6,7 +6,7 @@ from .monomialOrders import lexOrder
 from .rational import rational
 from .galoisField import GaloisField
 from .polynomial import Polynomial
-from NumberTheory import integerLCM, divisors
+from .modularArithmetic import integerLCM, divisors
 from .groebnerBasis import getGroebnerBasis
 
 def findRoots(f: Polynomial) -> list:

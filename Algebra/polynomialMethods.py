@@ -10,7 +10,8 @@ from .monomial import Monomial
 from .ideal import Ideal
 from .monomialOrders import lexOrder, gradedLexOrder, leadingCoefficient
 from .groebnerBasis import polynomialReduce, getGroebnerBasis
-from NumberTheory import integerLCM, integerGCD, primeFactorization
+from .primes import primeFactorization
+from .modularArithmetic import integerLCM, integerGCD
 
 
 
