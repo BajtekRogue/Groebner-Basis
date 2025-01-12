@@ -74,20 +74,21 @@ def extendToGroebnerBasis(Basis: list[Polynomial], permutation = list[str], orde
     G = list(Basis)
     while True: 
         H = list(G)
-        print(f"size = {len(H)}")
         for i in tqdm(range(len(G))):
             for j in range(i + 1, len(G)):
-                if not lcmCriterion(leadingMonomial(G[i], permutation, order), leadingMonomial(G[j], permutation, order)) and not chainCriterion(i, j, G, permutation):
-                    _, r = polynomialReduce(syzygy(G[i], G[j], permutation, order), G, permutation, order)
-                    if not r.isZeroPolynomial():
-                        H.append(r)
+                if lcmCriterion(leadingMonomial(G[i], permutation, order), leadingMonomial(G[j], permutation, order)):
+                    continue
+                if chainCriterion(i, j, G, permutation):
+                    continue
+                _, r = polynomialReduce(syzygy(G[i], G[j], permutation, order), G, permutation, order)
+                if not r.isZeroPolynomial():
+                    H.append(r)
 
         if len(G) == len(H):
-            # print(f'Groebner basis size when exiting: {len(G)}')
             return H
         else:
+            print(f"current size = {len(H)}")
             G = H
-            # print(f'Groebner basis size: {len(G)}')
 
 
 def lcmCriterion(alpha: Monomial, beta: Monomial) -> bool:
@@ -142,12 +143,14 @@ def reduceGroebnerBasis(G: list[Polynomial], permutation: list[str], order: Call
     2. For each g in G, g is reduced by other polynomials in G.
     3. If normalizeCoefficients is True, each polynomial is divided by it's leading coefficient.
     """
+    print(f"0step = {G}")
     H = list(G)
     for g in G:
         H.remove(g)
         if not isInLeadingTermsIdeal(g, H, permutation, order):
+            print(f"keeping {g}")
             H.append(g)
-
+    print(f"1step = {H}")
     s = len(H)
     counter = 0
     while counter < s:
@@ -161,7 +164,7 @@ def reduceGroebnerBasis(G: list[Polynomial], permutation: list[str], order: Call
 
             if r == h:
                 counter += 1
-
+    print(f"2step = {H}")
     if normalizeCoefficients:
         for i, h in enumerate(H):
             H[i] *= 1 / leadingCoefficient(h, permutation, order)
