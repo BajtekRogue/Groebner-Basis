@@ -1,72 +1,70 @@
 #include <gtest/gtest.h>
 #include "polynomial.hpp"
-#include "polynomialMethods.hpp"
+#include "groebnerBasis.hpp"
 #include "monomialOrders.hpp"
+#include "utility.hpp"
+#include "rational.hpp"
 #include <vector>
 
-TEST(PolynomialMethods, DefineVariable) {
+TEST(GroebnerBasis, DefineVariable) {
     auto x = defineVariable<Rational<int>>('x');
     Polynomial<Rational<int>> p({{Monomial({{'x', 1}}), 1}});
     EXPECT_EQ(p, x);
 }
 
-TEST(PolynomialMethods, PolynomialReduce1) {
+TEST(GroebnerBasis, PolynomialReduce1) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     Polynomial<Rational<int>> f = (x^3) + x * (y^2) + 5;
     Polynomial<Rational<int>> g1 = x * (y^2) - 5;
     Polynomial<Rational<int>> g2 = (x^2) + 3 * (y^2);
-    std::vector<Polynomial<Rational<int>>*> G = {&g1, &g2};
-    auto lexOrder = makeLexOrder(std::vector<char>({'x', 'y'}));
-    auto [Q, r] = polynomialReduce(f, G, lexOrder);
+    std::vector<Polynomial<Rational<int>>> G = {g1, g2};
+    auto [Q, r] = polynomialReduce(f, G, LexOrder({'x', 'y'}));
     EXPECT_EQ(Q[0], -2);
     EXPECT_EQ(Q[1], x);
     EXPECT_EQ(r, -5);
 }
 
-TEST(PolynomialMethods, PolynomialReduce2) {
+TEST(GroebnerBasis, PolynomialReduce2) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     Polynomial<Rational<int>> f = (x^2)*y + 1;
     Polynomial<Rational<int>> g1 = x * y + 1;
     Polynomial<Rational<int>> g2 = y + 1;
-    std::vector<Polynomial<Rational<int>>*> G = {&g1, &g2};
-    auto lexOrder = makeLexOrder(std::vector<char>({'x', 'y'}));
-    auto [Q, r] = polynomialReduce(f, G, lexOrder);
+    std::vector<Polynomial<Rational<int>>> G = {g1, g2};
+    auto [Q, r] = polynomialReduce(f, G, LexOrder({'x', 'y'}));
     EXPECT_EQ(Q[0], x);
     EXPECT_EQ(Q[1], 0);
     EXPECT_EQ(r, -x + 1);
 }
 
-TEST(PolynomialMethods, PolynomialReduce3) {
+TEST(GroebnerBasis, PolynomialReduce3) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     Polynomial<Rational<int>> f = (x^2)*y + x*(y^2) + (y^2);
     Polynomial<Rational<int>> g1 = x * y - 1;
     Polynomial<Rational<int>> g2 = (y^2) - 1;
-    std::vector<Polynomial<Rational<int>>*> G = {&g1, &g2};
-    auto lexOrder = makeLexOrder(std::vector<char>({'x', 'y'}));
-    auto [Q, r] = polynomialReduce(f, G, lexOrder);
+    std::vector<Polynomial<Rational<int>>> G = {g1, g2};
+    auto [Q, r] = polynomialReduce(f, G, LexOrder({'x', 'y'}));
     EXPECT_EQ(Q[0], x + y);
     EXPECT_EQ(Q[1], 1);
     EXPECT_EQ(r, x + y + 1);
 }
 
-TEST(PolynomialMethods, PolynomialReduce4) {
+TEST(GroebnerBasis, PolynomialReduce4) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     Polynomial<Rational<int>> f = (x^2)*y + 1;
     Polynomial<Rational<int>> g2 = x * y + 1;
     Polynomial<Rational<int>> g1 = y + 1;
-    std::vector<Polynomial<Rational<int>>*> G = {&g1, &g2};
-    auto lexOrder = makeLexOrder(std::vector<char>({'x', 'y'}));
-    auto [Q, r] = polynomialReduce(f, G, lexOrder);
+    std::vector<Polynomial<Rational<int>>> G = {g1, g2};
+    auto [Q, r] = polynomialReduce(f, G, LexOrder({'x', 'y'}));
     EXPECT_EQ(Q[0], x^2);
     EXPECT_EQ(Q[1], 0);
     EXPECT_EQ(r, -(x^2) + 1);
 }
 
-TEST(PolynomialMethods, PolynomialReduce5) {
+TEST(GroebnerBasis, PolynomialReduce5) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     auto z = defineVariable<Rational<int>>('z');
@@ -74,34 +72,31 @@ TEST(PolynomialMethods, PolynomialReduce5) {
     Polynomial<Rational<int>> g1 = (x^4) + y + z;
     Polynomial<Rational<int>> g2 = (x^2) + (y^2) + (z^2);
     Polynomial<Rational<int>> g3 = x + (y^3) + (z^3);
-    std::vector<Polynomial<Rational<int>>*> G = {&g1, &g2, &g3};
-    auto lexOrder = makeLexOrder(std::vector<char>({'x', 'y', 'z'}));
-    auto [Q, r] = polynomialReduce(f, G, lexOrder);
+    std::vector<Polynomial<Rational<int>>> G = {g1, g2, g3};
+    auto [Q, r] = polynomialReduce(f, G, LexOrder({'x', 'y', 'z'}));
     EXPECT_EQ(Q[0], x);
     EXPECT_EQ(Q[1], 0);
     EXPECT_EQ(Q[2], -y - z);
     EXPECT_EQ(r, (y^5) + (z^5) + (y^4) + (z^4) + (y^3) * z + y * (z^3) - 1);
 }
 
-TEST(PolynomialMethods, GroebnerBasis1) {
+TEST(GroebnerBasis, GroebnerBasis1) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
 
     auto f1 = (x^3) - 2*x*y;
     auto f2 = (x^2)*y - 2*(y^2) + x;
-    std::vector<Polynomial<Rational<int>>*> F = {&f1, &f2};
-    std::vector<Polynomial<Rational<int>>> G = getGroebnerBasis(F, GradedLexOrder({'x', 'y'}));
+    std::vector<Polynomial<Rational<int>>> F = {f1, f2};
+    std::vector<Polynomial<Rational<int>>> G = calculateGroebnerBasis(F, GradedLexOrder({'x', 'y'}));
 
-    auto g1 = (x^3) -2*x*y;
-    auto g2 = (x^2)*y - 2*(y^2) + x;
-    auto g3 = (x^2);
-    auto g4 = x*y;
-    auto g5 = (y^2) - Rational<int>(1, 2) * x;
-    std::vector<Polynomial<Rational<int>>> expectedG = {g1, g2, g3, g4, g5};
+    auto g1 = (x^2);
+    auto g2 = x*y;
+    auto g3 = (y^2) - Rational<int>(1, 2) * x;
+    std::vector<Polynomial<Rational<int>>> expectedG = {g1, g2, g3};
     EXPECT_EQ(G, expectedG);   
 }
 
-TEST(PolynomialMethods, GroebnerBasis2) {
+TEST(GroebnerBasis, GroebnerBasis2) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     auto z = defineVariable<Rational<int>>('z');
@@ -109,8 +104,8 @@ TEST(PolynomialMethods, GroebnerBasis2) {
     auto f1 = x + y + z - 1;
     auto f2 = (x^2) + (y^2) + (z^2) - 3;
     auto f3 = (x^3) + (y^3) + (z^3) - 4;
-    std::vector<Polynomial<Rational<int>>*> F = {&f1, &f2, &f3};
-    std::vector<Polynomial<Rational<int>>> G = getGroebnerBasis(F, LexOrder({'x', 'y', 'z'}));
+    std::vector<Polynomial<Rational<int>>> F = {f1, f2, f3};
+    std::vector<Polynomial<Rational<int>>> G = calculateGroebnerBasis(F, LexOrder({'x', 'y', 'z'}));
 
     auto g1 = x + y + z - 1;
     auto g2 = (y^2) + (z^2) + y*z - y - z - 1;
@@ -119,7 +114,7 @@ TEST(PolynomialMethods, GroebnerBasis2) {
     EXPECT_EQ(G, expectedG);   
 }
 
-TEST(PolynomialMethods, GroebnerBasis3) {
+TEST(GroebnerBasis, GroebnerBasis3) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     auto z = defineVariable<Rational<int>>('z');
@@ -129,8 +124,8 @@ TEST(PolynomialMethods, GroebnerBasis3) {
     auto f1 = 3*u+3*u*v*v-u*u*u-x;
     auto f2 = 3*v+3*u*u*v-v*v*v-y;
     auto f3 = 3*u*u-3*v*v-z;
-    std::vector<Polynomial<Rational<int>>*> F = {&f1, &f2, &f3};
-    std::vector<Polynomial<Rational<int>>> G = getGroebnerBasis(F, LexOrder({'u', 'v', 'x', 'y', 'z'}));
+    std::vector<Polynomial<Rational<int>>> F = {f1, f2, f3};
+    std::vector<Polynomial<Rational<int>>> G = calculateGroebnerBasis(F, LexOrder({'u', 'v', 'x', 'y', 'z'}));
 
     auto g = (-Rational<int>(64, 19683) * (z ^ 9)) +
              (Rational<int>(16, 243) * (x ^ 2) * (z ^ 6)) -
@@ -159,7 +154,7 @@ TEST(PolynomialMethods, GroebnerBasis3) {
     EXPECT_TRUE(std::find(G.begin(), G.end(), g) != G.end());
 }
 
-TEST(PolynomialMethods, GroebnerBasis4) {
+TEST(GroebnerBasis, GroebnerBasis4) {
     auto x = defineVariable<Rational<int>>('x');
     auto y = defineVariable<Rational<int>>('y');
     auto z = defineVariable<Rational<int>>('z');
@@ -169,8 +164,8 @@ TEST(PolynomialMethods, GroebnerBasis4) {
     auto f1 = t + u - x;
     auto f2 = (t^2) + 2*t*u - y;
     auto f3 = (t^3) +3 * (t^2) * u - z;
-    std::vector<Polynomial<Rational<int>>*> F = {&f1, &f2, &f3};
-    std::vector<Polynomial<Rational<int>>> G = getGroebnerBasis(F, LexOrder({'t', 'u', 'x', 'y', 'z'}));
+    std::vector<Polynomial<Rational<int>>> F = {f1, f2, f3};
+    std::vector<Polynomial<Rational<int>>> G = calculateGroebnerBasis(F, LexOrder({'t', 'u', 'x', 'y', 'z'}));
 
     auto g = (x^3) * z - Rational<int>(3, 4) * (x^2) * (y^2) - Rational<int>(3, 2)*x*y*z + (y^3) + Rational<int>(1, 4) * (z^2);
     EXPECT_EQ(G.size() , 7);

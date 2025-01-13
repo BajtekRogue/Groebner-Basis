@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -isystem /usr/include/gtest -pthread -I../ -g
+CXXFLAGS = -std=c++17 -isystem /usr/include/gtest -pthread -I../src -g
 LDFLAGS = -lgtest -lgtest_main -L/usr/lib
 
 # Directories

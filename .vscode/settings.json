@@ -58,6 +58,7 @@
         "ctime": "cpp",
         "optional": "cpp",
         "iomanip": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "span": "cpp"
     }
 }

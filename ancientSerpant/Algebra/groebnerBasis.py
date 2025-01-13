@@ -87,7 +87,6 @@ def extendToGroebnerBasis(Basis: list[Polynomial], permutation = list[str], orde
         if len(G) == len(H):
             return H
         else:
-            print(f"current size = {len(H)}")
             G = H
 
 
@@ -143,14 +142,12 @@ def reduceGroebnerBasis(G: list[Polynomial], permutation: list[str], order: Call
     2. For each g in G, g is reduced by other polynomials in G.
     3. If normalizeCoefficients is True, each polynomial is divided by it's leading coefficient.
     """
-    print(f"0step = {G}")
     H = list(G)
     for g in G:
         H.remove(g)
         if not isInLeadingTermsIdeal(g, H, permutation, order):
-            print(f"keeping {g}")
             H.append(g)
-    print(f"1step = {H}")
+
     s = len(H)
     counter = 0
     while counter < s:
@@ -164,7 +161,7 @@ def reduceGroebnerBasis(G: list[Polynomial], permutation: list[str], order: Call
 
             if r == h:
                 counter += 1
-    print(f"2step = {H}")
+
     if normalizeCoefficients:
         for i, h in enumerate(H):
             H[i] *= 1 / leadingCoefficient(h, permutation, order)

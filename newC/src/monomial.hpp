@@ -9,6 +9,10 @@
 #include <stdexcept>
 #include <algorithm>
 
+/**
+ * @brief Represents a monomial in a polynomial ring. It is stored as map where each variable has its corresponding exponent.
+ * 
+ */
 class Monomial {
 
 public:
@@ -35,6 +39,15 @@ public:
 
     ~Monomial() {}
 
+    Monomial& operator=(const Monomial& other) {
+        if (this != &other) {
+            _monomial = other._monomial;
+            _degree = other._degree;
+            _numVariables = other._numVariables;
+        }
+        return *this;
+    }
+    
     /**
      * @brief Get the degree of the monomial
      */
@@ -145,6 +158,9 @@ public:
         return *this;
     }
 
+    /**
+     * @brief Throws an `std::invalid_argument` exception if division is not possible
+     */
     Monomial operator/(const Monomial& other) const {
         std::map<char, int> result = _monomial;
         for (auto& [var, exp] : other._monomial) {
@@ -163,6 +179,9 @@ public:
         return Monomial(result);
     }
 
+    /**
+     * @brief Throws an `std::invalid_argument` exception if division is not possible
+     */
     Monomial operator/=(const Monomial& other) {
         for (auto& [var, exp] : other._monomial) {
             _monomial[var] -= exp;
@@ -209,7 +228,7 @@ public:
     }
 
     /**
-     * @brief Returns true iff `a / b` wouldn't throw an exception
+     * Returns true iff `a` is divisible by `b` so that `a / b` wouldn't throw an exception
      */
     static bool divides(const Monomial& a, const Monomial& b) {
         for (auto& [var, exp] : b.getMonomial()) {
@@ -221,7 +240,7 @@ public:
     }
 
     /**
-     * @brief Returns the least common multiple of two monomials, that is `lcm(a, b) = [max{a[i], b[i]}]_i`
+     * Returns the least common multiple of two monomials, that is `lcm(a, b) = [max{a[i], b[i]}]_i`
      */
     static Monomial lcm(const Monomial& a, const Monomial& b) {
         std::map<char, int> result = a._monomial;

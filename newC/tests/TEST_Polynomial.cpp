@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "polynomial.hpp"
-#include "polynomialMethods.hpp"
+#include "groebnerBasis.hpp"
+#include "rational.hpp"
+#include "utility.hpp"
 
 TEST(Polynomial, DefaultConstructor) {
     Polynomial<Rational<int>> p = Polynomial<Rational<int>>();

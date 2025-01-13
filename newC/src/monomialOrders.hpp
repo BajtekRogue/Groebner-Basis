@@ -6,19 +6,24 @@
 #include <limits>
 #include "monomial.hpp"
 
-
+/**
+ *  Abstract class for the monomial ordering. Any derived class must implement the compare method that returns the value of `a < b`
+ */
 class MonomialOrder {
 public:
     virtual ~MonomialOrder() = default;
     virtual bool compare(const Monomial& a, const Monomial& b) const = 0;
 };
 
-
+/**
+ * @brief Lexicographic monomial ordering. Constructor receives `permutation` which is the decreasing order of the variables.
+ * 
+ */
 class LexOrder : public MonomialOrder {
 
 public:
-    explicit LexOrder(std::vector<char> perm) 
-        : _permutation(std::move(perm)) {}
+    explicit LexOrder(std::vector<char> permutation) 
+        : _permutation(std::move(permutation)) {}
 
     bool compare(const Monomial& a, const Monomial& b) const override {
         for (char var : _permutation) {
@@ -35,12 +40,15 @@ private:
     std::vector<char> _permutation;
 };
 
-
+/**
+ * @brief Gradeded lex order. Constructor receives `permutation` which is the decreasing order of the variables it uses to break degree ties.
+ * 
+ */
 class GradedLexOrder : public MonomialOrder {
 
 public:
-    explicit GradedLexOrder(std::vector<char> perm) 
-        : _permutation(std::move(perm)) {}
+    explicit GradedLexOrder(std::vector<char> permutation) 
+        : _permutation(std::move(permutation)) {}
 
     bool compare(const Monomial& a, const Monomial& b) const override {
         int degA = a.getDegree();
@@ -64,7 +72,10 @@ private:
     std::vector<char> _permutation;
 };
 
-
+/**
+ * @brief Gradeded revearsed lex order. Constructor receives `permutation` which is the decreasing order of the variables it uses to break degree ties and it then reverses the outcome value.
+ * 
+ */
 class GradedRevLexOrder : public MonomialOrder {
 
 public:
@@ -93,7 +104,10 @@ private:
     std::vector<char> _permutation;
 };
 
-
+/**
+ * @brief Uses dot prodcut with positive real vector and lex order specified by the `permutation` to break ties.
+ * 
+ */
 class WeightedOrder : public MonomialOrder {
 
 public:

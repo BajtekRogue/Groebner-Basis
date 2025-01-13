@@ -6,6 +6,11 @@
 #include <numeric> 
 #include <sstream>
 
+/**
+ * @brief Represents a rational number with numerator and denominator of integral type.
+ * 
+ * @tparam `T` integer type, must be signed 
+ */
 template <typename T>
 class Rational {
     static_assert(std::is_integral<T>::value && std::is_signed<T>::value, "T must be a signed integer type");
@@ -25,6 +30,14 @@ public:
     T getNumerator() const { return _numerator; }
     T getDenominator() const { return _denominator; }
 
+    Rational& operator=(const Rational& other) {
+        if (this != &other) {
+            _numerator = other._numerator;
+            _denominator = other._denominator;
+        }
+        return *this;
+    }
+    
     Rational operator+(const Rational& other) const {
         T resultNumerator = _numerator * other._denominator + other._numerator * _denominator;
         T resultDenominator = _denominator * other._denominator;
@@ -273,11 +286,6 @@ private:
     }
 
 };
-
-template <typename T>
-Rational<T> abs(const Rational<T>& r) {
-    return Rational<T>(std::abs(r.getNumerator()), r.getDenominator());
-}
 
 
 #endif // RATIONAL_HPP

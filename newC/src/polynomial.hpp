@@ -7,25 +7,48 @@
 #include "monomial.hpp"
 #include "monomialOrders.hpp"
 
+/**
+ * @brief Represents a multivariable polynomial over a field `T`. Stores it as a map of monomials and their corresponding coefficients.
+ * 
+ * @tparam `T` coefficient type, must form a field 
+ */
 template <typename T>
 class Polynomial {
 
 public:
     Polynomial() {}
+    Polynomial(T t) {
+        if (!isCoefficientZero(t)) {
+            _coefficients[Monomial()] = t;
+        }
+    }
     Polynomial(std::map<Monomial, T> coefficients) {
-        for (const auto& [monomial, coefficient] : coefficients) {
+        for (auto& [monomial, coefficient] : coefficients) {
             if (!isCoefficientZero(coefficient)) {
-                _coefficients[monomial] = coefficient;
+                _coefficients[std::move(monomial)] = std::move(coefficient);
             }
         }
     }
-    Polynomial(const Polynomial<T>& other, bool x = true) : _coefficients(other._coefficients) {
-        // if (x) {
-        //     std::cout << "we coping " << other << std::endl;
-        // }
-    }
+    Polynomial(const Polynomial<T>& other) : _coefficients(other._coefficients) {}
+    Polynomial(Polynomial<T>&& other) noexcept : _coefficients(std::move(other._coefficients)) {}
 
     std::map<Monomial, T> getCoefficients() const { return _coefficients; }
+
+    Polynomial<T>& operator=(const Polynomial<T>& other) {
+        if (this != &other) {
+            _coefficients = other._coefficients;
+            if (other._validLeadingTerm) {
+                _validLeadingTerm = true;
+                _cachedLeadingMonomial = other._cachedLeadingMonomial;
+                _cachedLeadingCoefficient = other._cachedLeadingCoefficient;
+                _cachedOrder = other._cachedOrder;
+            }
+            else {
+                _validLeadingTerm = false;
+            }
+        }
+        return *this;
+    }
 
     Polynomial operator+(const Polynomial<T>& other) const {
         std::map<Monomial, T> resultCoefficients = _coefficients;
@@ -117,13 +140,10 @@ public:
         for (const auto& [monomial1, coefficient1] : _coefficients) {
             for (const auto& [monomial2, coefficient2] : other._coefficients) {
                 Monomial monomial = monomial1 * monomial2;
-                resultCoefficients[monomial] += coefficient1 * coefficient2;
-            }
-        }
-
-        for (const auto& [monomial, coefficient] : resultCoefficients) {
-            if (isCoefficientZero(coefficient)) {
-                resultCoefficients.erase(monomial);
+                T coefficient = coefficient1 * coefficient2;
+                if (!isCoefficientZero(coefficient)) {
+                    resultCoefficients[monomial] += coefficient;
+                }
             }
         }
         return Polynomial(resultCoefficients);
@@ -135,9 +155,9 @@ public:
         }
         std::map<Monomial, T> resultCoefficients;
         for (const auto& [monomial, coefficient] : _coefficients) {
-            resultCoefficients[monomial] = coefficient * other;
-            if (isCoefficientZero(resultCoefficients[monomial])) {
-                resultCoefficients.erase(monomial);
+            T newCoefficient = coefficient * other;
+            if (!isCoefficientZero(newCoefficient)) {
+                resultCoefficients[monomial] = newCoefficient;
             }
         }
         return Polynomial(resultCoefficients);
@@ -147,17 +167,15 @@ public:
         return p * other;
     }
 
-    Polynomial operator*= (const Polynomial<T>& other) {
+    Polynomial operator*=(const Polynomial<T>& other) {
         std::map<Monomial, T> resultCoefficients;
         for (const auto& [monomial1, coefficient1] : _coefficients) {
             for (const auto& [monomial2, coefficient2] : other._coefficients) {
                 Monomial monomial = monomial1 * monomial2;
-                resultCoefficients[monomial] += coefficient1 * coefficient2;
-            }
-        }
-        for (const auto& [monomial, coefficient] : resultCoefficients) {
-            if (isCoefficientZero(coefficient)) {
-                resultCoefficients.erase(monomial);
+                T coefficient = coefficient1 * coefficient2;
+                if (!isCoefficientZero(coefficient)) {
+                    resultCoefficients[monomial] += coefficient;
+                }
             }
         }
         _validLeadingTerm = false;
@@ -166,15 +184,15 @@ public:
     }
 
     Polynomial operator*=(T other) {
+        std::map<Monomial, T> resultCoefficients;
         for (auto& [monomial, coefficient] : _coefficients) {
-            coefficient *= other;
-        }
-        for (const auto& [monomial, coefficient] : _coefficients) {
-            if (isCoefficientZero(coefficient)) {
-                _coefficients.erase(monomial);
+            T newCoefficient = coefficient * other;
+            if (!isCoefficientZero(newCoefficient)) {
+                resultCoefficients[monomial] = newCoefficient;
             }
         }
         _validLeadingTerm = false;
+        _coefficients = resultCoefficients;
         return *this;
     }
 
@@ -195,6 +213,9 @@ public:
         return os;
     }
 
+    /**
+     * Returns a string representation of the polynomial. Expects custom coefficient type to have a `toString` method.
+     */
     std::string toString() const {
         if (_coefficients.empty()) {
             return "0";
@@ -208,18 +229,27 @@ public:
             const auto& monomial = it->first;
             const auto& coefficient = it->second;
 
-            std::string coeffStr = coefficient.toString();
             std::string monomStr = monomial.toString();
+            std::string coeffStr;
+
+            if constexpr (std::is_floating_point_v<T>) {
+                coeffStr = std::to_string(coefficient);
+            }
+            else {
+                coeffStr = coefficient.toString();
+            }
 
             // Handle the sign
             if (!isFirst) {
                 if (coeffStr[0] == '-') {
                     oss << " - ";
                     coeffStr = coeffStr.substr(1);
-                } else {
+                } 
+                else {
                     oss << " + ";
                 }
-            } else {
+            } 
+            else {
                 if (coeffStr[0] == '-') {
                     oss << "-";
                     coeffStr = coeffStr.substr(1);
@@ -290,6 +320,9 @@ public:
         return result;
     }
 
+    /**
+     * Checks if the polynomial is the zero polynomial
+     */
     bool isZeroPolynomial() const {
         for (const auto& [_, coefficient] : _coefficients) {
             if (!isCoefficientZero(coefficient)) {
@@ -301,7 +334,7 @@ public:
 
     /**
      * @brief Given map of variable values, evaluate the polynomial at the given point
-     * @throws std::invalid_argument if a variable is not found in the polynomial
+     * @throws `std::invalid_argument` if a variable exists in polynomial but not in the values map
      */
     T evaluate(const std::map<char, T>& values) const {
         T result = T(0);
@@ -309,7 +342,7 @@ public:
             T term = coefficient;
             for (const auto& [var, exp] : monomial.getMonomial()) {
                 if (values.find(var) == values.end()) {
-                    throw std::invalid_argument("Variable '" + std::string(1, var) + "' not found in the polynomial");
+                    throw std::invalid_argument("Variable '" + std::string(1, var) + "' found in the polynomial but it's value is not provided");
                 }
                 term *= power(values.at(var), exp);
             }
@@ -330,7 +363,7 @@ public:
     }
 
     /**
-     * @brief Get the variables in the polynomial
+     * @brief Get the variables present in the polynomial
      */
     std::vector<char> getVariables() const {
         std::set<char> variables;
@@ -368,7 +401,7 @@ public:
         return Polynomial(resultCoefficients);
     }
     /**
-     * @brief Returns the leading monomial of the polynomial with respect to the given order
+     * @brief Returns the leading monomial of the polynomial with respect to the given monomial order
      */
     const Monomial& leadingMonomial(const MonomialOrder& order) const {
         cacheLeadingMonomialAndCoefficient(order);
@@ -376,7 +409,7 @@ public:
     }
 
     /**
-     * @brief Returns the leading coefficient of the polynomial with respect to the given order
+     * @brief Returns the leading coefficient of the polynomial with respect to the given monomial order
      */
     T leadingCoefficient(const MonomialOrder& order) const {
         cacheLeadingMonomialAndCoefficient(order);
@@ -404,7 +437,7 @@ private:
 
     bool isCoefficientZero(T coefficient) const {
         if constexpr (std::is_floating_point_v<T>) {
-            return std::abs(coefficient) < std::numeric_limits<T>::epsilon();
+            return std::abs(coefficient) < 10e-6;
         }
         else {
             return coefficient == T(0);
