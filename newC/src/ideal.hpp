@@ -99,16 +99,20 @@ public:
         return *this;
     }
 
-    bool operator==(const Ideal<T>& other) const {
+    bool operator==(Ideal<T>& other)  {
         if (_groebnerBasis.empty()) {
             _groebnerBasis = getGroebnerBasis();
         }
         if (other._groebnerBasis.empty()) {
             other._groebnerBasis = other.getGroebnerBasis();
         }
-        std::set<Polynomial<T>> groebnerBasisSet(_groebnerBasis.begin(), _groebnerBasis.end());
-        std::set<Polynomial<T>> otherGroebnerBasisSet(other._groebnerBasis.begin(), other._groebnerBasis.end());
-        return groebnerBasisSet == otherGroebnerBasisSet;
+        
+        for (const auto& f : _groebnerBasis) {
+            if (other._groebnerBasis.end() == std::find(other._groebnerBasis.begin(), other._groebnerBasis.end(), f)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     bool operator!=(const Ideal<T>& other) const {
@@ -152,7 +156,7 @@ public:
     /**
      * Returns `true` if `f` is in the ideal. Requires calculation of Groebner basis.
      */
-    bool isInIdeal(const Polynomial<T>& f) const {
+    bool isInIdeal(const Polynomial<T>& f)  {
         if (_groebnerBasis.empty()) {
             _groebnerBasis = getGroebnerBasis();
         }

@@ -8,18 +8,31 @@
 #include "groebnerBasis.hpp"
 #include "ideal.hpp"
 #include "utility.hpp"
+#include "solver.hpp"
 #include <span>
 
+
 int main() {
-    using Rational = double;
+    using Rational = Rational<int>;
 
     auto x = defineVariable<Rational>('x');
     auto y = defineVariable<Rational>('y');
-    auto f1 = x*x - y *y;
-    auto f2 = (x -y) * (x*x*x + y*y*5+4*x);
-    auto f3 = (x-y) * (x*x*x+7);
-    auto l = lcm(f1, f3, f2);
-    std::cout << "lcm: " << l << std::endl;
+    auto z = defineVariable<Rational>('z');
 
+    auto f1 = x + y + z - 9;
+    auto f2 = (x^2) + (y^2) + (z^2) - 35;
+    auto f3 = (x^3) + (y^3) + (z^3) - 153;
+    auto f4 = x*y*z-151;
+
+
+    std::vector<Polynomial<Rational>> F = {f1, f2, f3, f4};
+    std::vector<std::map<char, Rational>> X = solveSystem(F);
+
+    for (const auto& solution : X) {
+        for (const auto& [var, value] : solution) {
+            std::cout << var << " = " << value << " ";
+        }
+        std::cout << std::endl;
+    }
     return 0;
 }

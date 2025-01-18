@@ -226,11 +226,4 @@ Polynomial<T> gcd(std::vector<Polynomial<T>> polynomials) {
 
 
 
-/* ADD SOLVER AND BE DONE WITH THIS*/
-
-
-
-
-
-
 #endif // UTILITY_HPP
